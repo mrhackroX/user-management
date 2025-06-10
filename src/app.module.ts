@@ -14,6 +14,8 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { RoleModule } from './modules/role/role.module';
 import { Role } from './modules/role/role.entity';
+import { DocumentModule } from './modules/document/document.module';
+import { Document } from './modules/document/document.entity';
 
 @Module({
   imports: [
@@ -27,7 +29,7 @@ import { Role } from './modules/role/role.entity';
           username: process.env.DB_USER,
           password: process.env.DB_PASSWORD,
           database: process.env.DB_NAME,
-          entities: [User, Role],
+          entities: [User, Role, Document],
           synchronize: true,
           logging: ['error', 'warn'],
           extra: {
@@ -44,6 +46,7 @@ import { Role } from './modules/role/role.entity';
     AuthModule,
     UserModule,
     RoleModule,
+    DocumentModule,
   ],
   controllers: [],
   providers: [],
