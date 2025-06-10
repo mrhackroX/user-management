@@ -1,112 +1,198 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+# User Document Management
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This project is a modular, scalable, and cloud-ready backend service built using the NestJS framework. It is designed to manage user authentication, role-based access control, document management, and document ingestion workflows. The system is engineered with a strong emphasis on code quality, testability, and maintainability, aligning with production-grade standards even if some features remain in a prototype state.
 
-## Project setup
+## Features
+
+- User Authentication: Register, login, logout, and role-based access control (admin, editor, viewer).
+- User Management: Admin-only functionality for managing user roles and permissions.
+- Document Management: CRUD operations for user documents. AWS S3 integration for secure document storage.
+- Ingestion Management: APIs to trigger and manage ingestion pipelines for document processing.
+
+## Prerequisites
+
+Before running this project, ensure the following services are properly configured:
+
+### 1. AWS S3 Bucket Setup
+
+This project uses AWS S3 for secure document storage.
+
+#### Steps:
+
+- Sign in to the [AWS Console](https://aws.amazon.com/console/).
+- Go to **S3** and create a new bucket:
+  - Bucket Name: (e.g., `user-documents`)
+  - Region: `ap-south-1`
+- Go to **IAM**, create a user with **Programmatic Access**:
+  - Attach the `AmazonS3FullAccess` policy (or a custom policy with minimal permissions).
+  - Save the **Access Key ID** and **Secret Access Key** for environment configuration.
+
+### 2. PostgreSQL Database Setup
+
+This project supports using **either a local PostgreSQL instance** or **AWS RDS**.
+
+#### Option A: Local PostgreSQL
+
+Install PostgreSQL from [https://www.postgresql.org/download/](https://www.postgresql.org/download/) if you haven't already.
+
+Default configuration:
+
+- **Host**: `localhost`
+- **Port**: `5432`
+- **Username**: `postgres`
+- **Password**: _(set during installation)_
+
+Create the database: user_document_management
+
+#### Option B: AWS RDS (PostgreSQL)
+
+If you prefer a managed cloud database, you can use **Amazon RDS** to host your PostgreSQL instance.
+
+##### Steps to Set Up RDS:
+
+##### 1. **Log in** to the [AWS Management Console](https://console.aws.amazon.com/).
+
+##### 2. **Navigate** to the **RDS** service.
+
+##### 3. **Create a new PostgreSQL database**:
+
+- **Engine**: PostgreSQL
+- **DB Identifier**: `user-document-management`
+- **Master Username**: `postgres`
+- **Master Password**: `<your-db-password>`
+- **DB Name**: `user_document_management`
+
+##### 4. **Enable Public Access**:
+
+- During setup, enable public accessibility **if you plan to connect from your local machine**.
+
+##### 5. **Configure Security Group**:
+
+- Go to **VPC > Security Groups**.
+- Find the security group associated with your RDS instance.
+- Add an **Inbound Rule**:
+  - **Type**: PostgreSQL
+  - **Port**: `5432`
+  - **Source**: Your IP (e.g., `203.0.113.0/32`)
+
+##### 6. **Note down your RDS connection details**:
+
+- **Endpoint** (used as `DB_HOST` in your `.env.stage.dev`)
+- **Port** (typically `5432`)
+
+## Project Setup
+
+### 1. **Clone the Repository**
 
 ```bash
-$ yarn install
+git clone https://github.com/mrhackroX/user-management.git
 ```
 
-## Compile and run the project
+### 2. **Navigate to the Project Directory**
 
 ```bash
-# development
-$ yarn run start
-
-# watch mode
-$ yarn run start:dev
-
-# production mode
-$ yarn run start:prod
+cd user-management
 ```
 
-## Run tests
+### 3. **Install Dependencies**
 
 ```bash
-# unit tests
-$ yarn run test
-
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
+yarn install
 ```
 
-## Deployment
+### 4. **Configure Environment Variables**
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+- Create a `.env` file in the root directory of the project.
+- Update the `.env` file with your AWS RDS, AWS S3 bucket and application configuration:
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+  ```env
+   AWS_ACCESS_KEY_ID='<your-aws-access-key>'
+   AWS_SECRET='<your-aws-secret-key>'
+   AWS_REGION='ap-south-1'
+   AWS_BUCKET_NAME='user-documents'
+   DB_HOST='<your-db-host>'
+   DB_PORT='5432'
+   DB_USERNAME='postgres'
+   DB_PASSWORD='<your-db-password>'
+   DB_DATABASE='user_document_management'
+   JWT_SECRET='<your-jwt-secret>'
+   PORT=3000
 
-```bash
-$ yarn install -g @nestjs/mau
-$ mau deploy
-```
+  ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Running the Application
 
-## Resources
+- **Install packages**:
 
-Check out a few resources that may come in handy when working with NestJS:
+  ```bash
+  yarn install
+  ```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+- **Development Mode** (with live reload):
 
-## Support
+  ```bash
+  npm run start:dev
+  ```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- **Production Mode**:
 
-## Stay in touch
+  ```bash
+  npm run build
+  npm run start:prod
+  ```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Running Tests
 
-## License
+- **Unit Tests**:
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+  ```bash
+  npm run test
+  ```
 
-ENV-
+- **Coverage**:
+  ```bash
+  npm run test:cov
+  ```
 
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=12345
-DB_NAME=mydb
-PORT=4000
-JWT_SECRET=Abcd1234
-AWS_ACCESS_KEY_ID=
-AWS_SECRET=
-AWS_REGION=
-AWS_BUCKET_NAME=
+## Accessing the Application
+
+The application runs on `http://localhost:3000` by default. Use tools like Postman or cURL to interact with the APIs.
+
+## Authentication & Authorization
+
+This application uses **JWT (JSON Web Tokens)** for secure authentication and **role-based authorization** using custom guards in the NestJS framework.
+
+### Authorization & Role Management
+
+#### 1. **Roles and Access Control:**
+
+- The app uses a custom guard to control access to routes based on user roles.
+- Roles include: `admin`, `editor`, and `viewer`.
+- Admins have full access to manage users and documents.
+- Editors can create and update content.
+- Viewers can only read data.
+
+#### 2. **Role Assignment:**
+
+- When a user signs up, they are saved with the `viewer` role by default.
+- **Only an admin** can update a user's role in the system (e.g., promote to `editor` or `admin`).
+- There is no public API to change user roles; it's a protected admin-only operation.
+
+#### 3. **Route-Level Authorization:**
+
+- Protected routes are decorated using the `@Roles()` decorator.
+- The `RolesGuard` checks the user’s role from the JWT payload and grants/denies access accordingly.
+
+### 4. Post-Deployment Checklist
+
+#### i) Database connectivity is verified
+
+#### ii) S3 upload credentials work
+
+#### iii) Application is reachable via EC2 public IP or domain
+
+#### iv) pm2 ensures application restarts on reboot
+
+#### v) Logs available via pm2 logs

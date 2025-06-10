@@ -1,14 +1,18 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Test, TestingModule } from '@nestjs/testing';
 import { DocumentService } from './document.service';
-import { DataSource, QueryRunner, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { CreateDocumentDto } from './dto/document.dto';
-import { S3 } from 'aws-sdk';
+import { url } from 'inspector';
+// import { S3 } from 'aws-sdk';
 
 const mockDocument = {
   id: 'uuid-123',
   name: 'Test Document',
   info: 'Some info',
+  url: 'http://example.com/test.pdf',
   created_at: new Date(),
   updated_at: new Date(),
 };
@@ -81,7 +85,11 @@ describe('DocumentService', () => {
 
   describe('createDocument', () => {
     it('should create a document', async () => {
-      const dto: CreateDocumentDto = { name: 'Doc', info: 'Info' };
+      const dto: CreateDocumentDto = {
+        name: 'Doc',
+        info: 'Info',
+        url: 'http://example.com/doc.pdf',
+      };
       queryRunner.manager.save.mockResolvedValue(mockDocument);
 
       const result = await service.createDocument(dto);
@@ -92,7 +100,11 @@ describe('DocumentService', () => {
 
   describe('updateDocument', () => {
     it('should update a document', async () => {
-      const dto: CreateDocumentDto = { name: 'Updated', info: 'Updated Info' };
+      const dto: CreateDocumentDto = {
+        name: 'Updated',
+        info: 'Updated Info',
+        url: 'http://example.com/updated.pdf',
+      };
       queryRunner.manager.save.mockResolvedValue({ ...mockDocument, ...dto });
 
       const result = await service.updateDocument('uuid-123', dto);
@@ -102,7 +114,7 @@ describe('DocumentService', () => {
     it('should throw if document not found', async () => {
       documentRepoMock.findOne = jest.fn().mockResolvedValue(null);
       await expect(
-        service.updateDocument('wrong-id', { name: '', info: '' }),
+        service.updateDocument('wrong-id', { name: '', info: '', url: '' }),
       ).rejects.toThrow();
     });
   });

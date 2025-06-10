@@ -8,14 +8,17 @@ import {
   Param,
   Post,
   UploadedFile,
+  UseGuards,
 } from '@nestjs/common';
 import { DocumentService } from './document.service';
 import { CreateDocumentDto } from './dto/document.dto';
-import { ResponseHandler } from 'src/utils/responseHandler';
+import { ResponseHandler } from '../../utils/responseHandler';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('document')
 export class DocumentController {
   constructor(private readonly documentService: DocumentService) {}
+  @UseGuards(AuthGuard)
   @Post()
   async createDocument(@Body() body: CreateDocumentDto) {
     await this.documentService.createDocument(body);
@@ -26,6 +29,7 @@ export class DocumentController {
     );
   }
 
+  @UseGuards(AuthGuard)
   @Get()
   async getAllDocuments() {
     const res = await this.documentService.getAllDocuments();
@@ -36,6 +40,7 @@ export class DocumentController {
     );
   }
 
+  @UseGuards(AuthGuard)
   @Get(':id')
   async getDocumentById(@Body('id') id: string) {
     const res = await this.documentService.getDocumentById(id);
@@ -46,6 +51,7 @@ export class DocumentController {
     );
   }
 
+  @UseGuards(AuthGuard)
   @Post('update/:id')
   async updateDocument(
     @Param('id') id: string,
@@ -59,6 +65,7 @@ export class DocumentController {
     );
   }
 
+  @UseGuards(AuthGuard)
   @Delete(':id')
   async deleteDocument(@Param('id') id: string) {
     await this.documentService.deleteDocument(id);
@@ -69,6 +76,7 @@ export class DocumentController {
     );
   }
 
+  @UseGuards(AuthGuard)
   @Post('/upload')
   async uploadDocument(@UploadedFile() file: Express.Multer.File) {
     const res = await this.documentService.upload(file);
